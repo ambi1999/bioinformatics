@@ -99,12 +99,19 @@ END WORKFLOW 2
 
 END
 
+
+##########
+#START OF BACKUP OF MAIN WORKFLOW 3 APRIL 2017
+##########
+
+
 prefix="G"
 #path1=/home/ubuntu/ambi
 #path softwares
 pathPicard="/home/ubuntu/ambi/software/Picard/"
 pathFastqc="/home/ubuntu/ambi/software/fastqc_v0.11.5/FastQC/"
 pathTrimmomaticAdapters="/home/ubuntu/ambi/software/Trimmomatic-0.36/adapters"
+pathVarscan="/home/ubuntu/ambi/software/varscan/"
 
 
 #path raw fastq files containing reads
@@ -114,8 +121,8 @@ pathQualityReads="qualitytrimreads"
 #readsFile1="B_S60_L001_R1_001_val_1.fq.gz"
 #readsFile2="B_S60_L001_R2_001_val_2.fq.gz"
 
-readsFile1="G_S61_L001_R1_001_val_1.fq.gz"
-readsFile2="G_S61_L001_R2_001_val_2.fq.gz"
+readsFile1="/home/ubuntu/ambi/scvG/G_S61_L001_R1_001_val_1.fq.gz"
+readsFile2="/home/ubuntu/ambi/scvG/G_S61_L001_R2_001_val_2.fq.gz"
 
 
 pathAlignment="alignment"
@@ -137,15 +144,30 @@ pathQualityReadsReverseUnPaired="$pathQualityReads"/"$prefix"_output_reverse_unp
 
 
 #trim reads
-trimmomatic PE -phred33 ../"$readsFile1" ../"$readsFile2" $pathQualityReadsForwardPaired $pathQualityReadsForwardUnPaired $pathQualityReadsReversePaired $pathQualityReadsReverseUnPaired  ILLUMINACLIP:"$pathTrimmomaticAdapters"/TruSeq3-PE.fa:2:30:10 CROP:160 LEADING:3 TRAILING:3 SLIDINGWINDOW:4:30 MINLEN:36\
+trimmomatic PE -phred33 "$readsFile1" "$readsFile2" $pathQualityReadsForwardPaired $pathQualityReadsForwardUnPaired $pathQualityReadsReversePaired $pathQualityReadsReverseUnPaired  ILLUMINACLIP:"$pathTrimmomaticAdapters"/TruSeq3-PE.fa:2:30:10 CROP:160 LEADING:3 TRAILING:3 SLIDINGWINDOW:4:30 MINLEN:36\
 &&echo "generate fastqc report"\
 &&"$pathFastqc"/fastqc $pathQualityReadsForwardPaired $pathQualityReadsReversePaired --outdir="$pathQualityReads"/fastqcoutput_"$prefix"/\
+&&echo "map using bowtie2"\
 &&bowtie2 -x $pathGenome/WT_scaffolds_denovo_filtered -1 $pathQualityReadsForwardPaired -2 $pathQualityReadsReversePaired -S $pathAlignment/"$prefix"_reads_aligned_denovo.sam\
+&&echo "convert sam to bam using samtools view"\
 &&samtools view -b -S -o $pathAlignment/"$prefix"_reads_aligned_denovo.bam $pathAlignment/"$prefix"_reads_aligned_denovo.sam\
+&&echo "sort bam using samtools sort"\
 &&samtools sort -o $pathAlignment/"$prefix"_reads_aligned_denovo_sorted.bam $pathAlignment/"$prefix"_reads_aligned_denovo.bam\
 &&echo "remove duplicates"\
 &&java -Xms4g -jar $pathPicard/picard.jar MarkDuplicates INPUT= $pathAlignment/"$prefix"_reads_aligned_denovo_sorted.bam OUTPUT= $pathAlignment/"$prefix"_reads_aligned_denovo_sorted.rmdup.bam METRICS_FILE= $pathAlignment/"$prefix"_reads_aligned_denovo_sorted.rmdup.txt2 REMOVE_DUPLICATES=true VALIDATION_STRINGENCY=LENIENT\
+&&echo "generate index of bam file to view it in igv"\
 &&samtools index $pathAlignment/"$prefix"_reads_aligned_denovo_sorted.rmdup.bam\
 &&echo "generate fastqc report post remove duplicate"\
 &&"$pathFastqc"/fastqc $pathAlignment/"$prefix"_reads_aligned_denovo_sorted.rmdup.bam --outdir="$pathQualityReads"/fastqcoutput_"$prefix"/\
-&& freebayes -f $pathGenome/WT_scaffolds_denovo_filtered.fasta $pathAlignment/"$prefix"_reads_aligned_denovo_sorted.rmdup.bam > $pathVariants/"$prefix"_variants_freebayes_denovo_rmdup.vcf
+&&echo "generate vcf using freebayes"\
+&& freebayes -f $pathGenome/WT_scaffolds_denovo_filtered.fasta $pathAlignment/"$prefix"_reads_aligned_denovo_sorted.rmdup.bam > $pathVariants/"$prefix"_variants_freebayes_denovo_rmdup.vcf\
+&&echo "generate mpileup"\
+&&samtools mpileup -f $pathGenome/WT_scaffolds_denovo_filtered.fasta $pathAlignment/"$prefix"_reads_aligned_denovo_sorted.rmdup.bam > "$prefix".mpileup\
+&&echo "generate vcf using varscan and mpileup using varscan mpileup2cns"\
+&&java -jar $pathVarscan/VarScan.v2.3.9.jar mpileup2cns "$prefix".mpileup --min-coverage 40 --min-reads2 20 --output-vcf 1 --variants > "$prefix".vcf
+
+
+##########
+#END OF BACKUP OF MAIN WORKFLOW 3 APRIL 2017
+##########
+
