@@ -12,5 +12,9 @@ tmux a -t myname
 
 ctrl+b d
 
-5. Tutorial:
+5. list sessions:
+
+tmux ls
+
+6. Tutorial:
 https://gist.github.com/MohamedAlaa/2961058
