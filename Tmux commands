@@ -19,3 +19,9 @@ tmux ls
 
 6. Tutorial:
 https://gist.github.com/MohamedAlaa/2961058
+
+7. See remote server performance
+
+Htop – Linux Process Monitoring
+
+Or vmstat
