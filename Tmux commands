@@ -1,0 +1,16 @@
+1. start new with session name:
+
+tmux new -s myname
+
+2. attach:
+tmux a  #  (or at, or attach)
+
+3. attach to named:
+tmux a -t myname
+
+4. Detach from current screen:
+
+ctrl+b d
+
+5. Tutorial:
+https://gist.github.com/MohamedAlaa/2961058
