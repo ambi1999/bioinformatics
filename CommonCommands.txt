@@ -1,0 +1,36 @@
+1. Commands to send files:
+
+scp -r /media/ambi/DATA2/Research/GenomeSequencePaul/data ubuntu@137.205.69.27:/home/ubuntu/ambi/pangenomics
+
+Copy the file "foobar.txt" from a remote host to the local host
+$ scp your_username@remotehost.edu:foobar.txt /some/local/directory
+
+Copy the file "foobar.txt" from the local host to a remote host
+$ scp foobar.txt your_username@remotehost.edu:/some/remote/directory
+
+Copy the directory "foo" from the local host to a remote host's directory "bar"
+$ scp -r foo your_username@remotehost.edu:/some/remote/directory/bar
+
+Copy the file "foobar.txt" from remote host "rh1.edu" to remote host "rh2.edu"
+$ scp your_username@rh1.edu:/some/remote/directory/foobar.txt your_username@rh2.edu:/some/remote/directory/
+
+Copy the directory "foo" from the remote to a local host
+$ scp -r foo your_username@remotehost.edu:/some/remote/directory/bar
+
+2. Prokka
+# syntax - example
+$ prokka --outdir {OUTPUT_DIR} --prefix {OUTPUT_PREFIX} {FASTA_TO_BE_ANNOTATED}
+ 
+# real case (annotate genome 1)
+$ prokka --outdir ecoli_NCTC9702_annotation/ --prefix ecoli_NCTC9702 ecoli_NCTC9702.fasta
+
+# syntax - example
+$ prokka --outdir Aber_output --prefix AberFuso Aber_Fuso_Genomes/*.fna
+
+3. Roary 
+roary -f roaryoutput -e -n -v annotation/*.gff
+
+4. Scoary
+Scores the components of a pan-genome for associations to traits while accounting for population stratification. 
+https://omictools.com/scoary-tool
+
