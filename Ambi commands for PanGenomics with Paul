@@ -11,8 +11,13 @@ find . -name "*gff" -exec cp {} annotations \;
 roary -f roaryoutput -e -n -v annotations/*.gff
 
 3. Generate graphs 
-wget https://raw.githubusercontent.com/sanger-pathogens/Roary/master/contrib/roary_plots/roary_plots.py
 
+Step1: Generate tree file
+FastTree -nt -gtr core_gene_alignment.aln > ambi_tree.newick
+
+Step 2: Run python script
+
+wget https://raw.githubusercontent.com/sanger-pathogens/Roary/master/contrib/roary_plots/roary_plots.py
 python roary_plots.py ambi_tree.newick gene_presence_absence.csv
 
 4 Commands to send files:
