@@ -8,6 +8,8 @@ for k in *.fna; do prokka $k --outdir "$k".prokka.output --prefix PROKKA_$k; ech
 
 find . -name "*gff" -exec cp {} annotations \;
 
+roary -f secondRunRoaryoutput -e -o -v -r -p 8  annotations/*.gff
+
 roary -f roaryoutput -e -n -v annotations/*.gff
 
 3. Generate graphs 
